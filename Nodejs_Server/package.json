@@ -1,0 +1,16 @@
+{
+  "name": "nodejs_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "method.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon method.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "lodash": "^4.17.21"
+  }
+}

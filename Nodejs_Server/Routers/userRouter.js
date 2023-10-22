@@ -1,13 +1,16 @@
 const express = require("express");
 const userModel = require("../models/userModel");
-const cookieParser = require("cookie-parser");  
+const cookieParser = require("cookie-parser"); 
+const protectedRoute = require("../Routers/authHelper"); 
+
+ 
 
 const userRouter = express.Router();
 
 
 userRouter
   .route("/")
-  .get(getUsers)
+  .get(protectedRoute, getUsers)
   .post(postUser)
   .patch(updateUser)
   .delete(deleteUser);
@@ -19,8 +22,15 @@ userRouter.route("/:id").get(getUserById);
 
 async function getUsers(req, res) {
   // console.log(req.query);
-  let allUsers = await userModel.find();
-  let user = await userModel.find({ name: "Sarvesh" });
+  let users = await userModel.find();
+  // let user = await userModel.find({ name: "Sarvesh" });
+  if(users){
+    return res.json(users)
+  } else {
+    return res.json({
+      message: "no users found"
+    })
+  }
 
   res.json({
     message: "list of all users",
@@ -96,5 +106,7 @@ function getCookies(req, res) {
   console.log(cookies);
   res.send("cookies has been set");
 }
+
+
 
 module.exports = userRouter;

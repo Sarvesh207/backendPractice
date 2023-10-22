@@ -49,6 +49,7 @@ async function loginUser(req, res) {
       if (user) {
         //bcyrpt => compare
         if (user.password == data.password) {
+          res.cookie("isLoggedIn", true, {httpOnly:true})
           return res.json({
             message: "login successfull",
             user: data,

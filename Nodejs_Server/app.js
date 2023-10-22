@@ -1,32 +1,29 @@
-// const express = require('express')
+const express = require("express");
+const app = express();
+const cookieParser = require("cookie-parser");  
+
+app.use(express.json());
+
+//its middleware function its use in post request whatever data is comming convert in json
+
+app.listen(5000, () => {
+  console.log("Server is with method running on port 5000");
+});
+app.use(cookieParser());
 
 
-// const app = express();
+const userRouter = require("./Routers/userRouter")
+const authRouter = require("./Routers/authRouter")
 
-// app.listen(3000, () => {
-//     console.log('Server is running on port 3000')
+app.use("/user", userRouter);
 
-// })
-
-// app.get('/', (req, res) => {
-//     res.sendFile('./views/index.html', {root:__dirname})
-// })
-
-// app.get('/about', (req, res) => {
-//     res.sendFile('./views/about.html', {root:__dirname})
-// })
-
-// //redirect
-
-// app.get('/about-us', (req, res) => {
-//     res.redirect('/about')
-// })
+app.use("/auth", authRouter);
 
 
-// //404 Page
 
-// app.use((req, res) => {
-//     res.status(404).sendFile('./views/404.html', {root:__dirname})
-// })
 
-// //Post -> to send data from frontend to backend
+
+
+
+
+

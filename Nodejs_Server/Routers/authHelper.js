@@ -1,13 +1,7 @@
 // let flag = false;  // user is loggedIn
+const jwt = require("jsonwebtoken");
+const JWT_KEY = require("../scretes")
 
-function protectedRoute(req, res, next){
-    if(req.cookies.isLoggedIn){
-      next();
-    } else {
-      return res.json({
-        message: "user is not loggedIn operatio is not allowed "
-      })
-    }
-  }
 
-  module.exports = protectedRoute;
+
+  // module.exports = protectedRoute;

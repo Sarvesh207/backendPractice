@@ -108,6 +108,12 @@ module.exports.protectRoute = async function protectedRoute(req, res, next) {
         });
       }
     } else {
+      ///browser
+      const client = req.get("User-Agent");
+      if(client.includes("Mozilla") == true){
+        return res.redirect('/login');
+      }
+      // postman
       return res.json({
         message: "Plese login",
       });
@@ -145,9 +151,9 @@ module.exports.forgetpassword = async function forgetpassword(req, res) {
   }
 };
 
-// resetv password
+// reset password
 
-async function resetpassword(req, res) {
+module.exports.resetpassword = async function resetpassword(req, res) {
   try {
     const token = req.params.token;
     let { password, confirmPassword } = req.body;
@@ -170,4 +176,13 @@ async function resetpassword(req, res) {
         message: error.message,
       });
   }
-}
+};
+
+// logout password
+
+module.exports.logout = function logout(req, res) {
+  res.cookie("login", "", { maxAge: 1 });
+  res.json({
+    message: "user logged out successfully",
+  });
+};

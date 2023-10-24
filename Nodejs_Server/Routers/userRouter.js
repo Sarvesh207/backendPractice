@@ -13,6 +13,9 @@ const {
   login,
   protectRoute,
   isAuthorised,
+  forgetpassword,
+  resetpassword ,
+  logout
 } = require("../controller/authController");
 
 userRouter = express.Router();
@@ -33,6 +36,10 @@ userRouter
 userRouter
 .route('/resetpassword/:token')
 .post(resetpassword);
+
+userRouter
+.route('/logout')
+.get(logout)
 
 //Profile Page
 userRouter.use(protectRoute);

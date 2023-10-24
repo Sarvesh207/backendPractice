@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const emailValidator = require("email-validator");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto"); 
 const db_link =
   "mongodb+srv://sarveshgaynar:FLdU4Lik8rKF3bUw@cluster0.aqh1jp6.mongodb.net/";
 
@@ -74,6 +75,18 @@ userSchema.pre("save", function () {
    
 // })
 //model
+userSchema.methods.createResetToken = function(){
+  // creating unique token using npm i crypto
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.resetToken = resetToken;
+  return resetToken;
+}
+
+userSchema.methods.resetPasswordHandler = function (password, comfirmPassword){
+  this.password = password;
+  this.confirmPassword = comfirmPassword;
+  this.resetToken = undefined;
+}
 
 const userModel = mongoose.model("userModel", userSchema);
 

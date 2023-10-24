@@ -32,7 +32,7 @@ module.exports.updateUser = async function updateUser(req, res) {
       for (let i = 0; i < keys.length; i++) {
         user[keys[i]] = dataToBeUpdated[keys[i]];
       }
-
+      user.confirmPassword = user.password;
       const updatedData = await user.save();
 
       res.json({
@@ -46,7 +46,7 @@ module.exports.updateUser = async function updateUser(req, res) {
     }
   } catch (error) {
     res.status(500).json({
-      message: err.message,
+      message: error.message,
     });
   }
 };
@@ -65,7 +65,6 @@ module.exports.deleteUser = async function deleteUser(req, res) {
         user: user,
       });
     }
-    res.json({ message: "Data is deleted", data: user });
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -92,5 +91,3 @@ module.exports.getAllUser = async function getAllUser(req, res) {
     });
   }
 };
-
-

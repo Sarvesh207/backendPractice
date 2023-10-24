@@ -26,12 +26,20 @@ userRouter.route("/signup").post(signup);
 // Login
 userRouter.route("/login").post(login);
 
+userRouter
+.route('/forgetpassword')
+.post(forgetpassword);
+
+userRouter
+.route('/resetpassword/:token')
+.post(resetpassword);
+
 //Profile Page
-app.use(protectRoute);
+userRouter.use(protectRoute);
 userRouter.route("/userProfile").get(getUser);
 
 // admin specific func
-app.use(isAuthorised(["admin"]));
+userRouter.use(isAuthorised(["admin"]));
 userRouter.route("").get(getAllUser);
 
 module.exports = userRouter;

@@ -1,2 +1,3 @@
-const JWT_KEY ="jvdvvfjvjfj"
-module.exports = {JWT_KEY}
+module.exports={
+    JWT_KEY:"rbfywg8374bfuiwebf"
+}

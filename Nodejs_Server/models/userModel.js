@@ -49,7 +49,8 @@ const userSchema = new mongoose.Schema({
    profileImage:{
     type:String, 
     default:"img/users/default.jpeg"
-  }
+  },
+  resetToken:String
 });
 
 

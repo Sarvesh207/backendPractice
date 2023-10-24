@@ -1,116 +1,173 @@
 const express = require("express");
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const JWT_KEY = require("../scretes");
+const { JWT_KEY } = require("../scretes");
 
 // Sign up user
 module.exports.signup = async function signUp(req, res) {
-    try {
-            let dataObj = req.body;
-            let user = await userModel.create(dataObj);
-            if(user){
-                return res,json({
-                    message: "user signed up",
-                    data: user,
-                })
-            }
-            else {
-                res.json({
-                    message:"error while signing up"
-                })
-            }
-            // console.log("backend", user);
-            res.json({
-            message: "user signed up",
-            data: user,
-            });
-    } catch (error) {
-            res.status(500).json({
-            message: error.message,
-            });
+  try {
+    let dataObj = req.body;
+    let user = await userModel.create(dataObj);
+    if (user) {
+      return res.json({
+        message: "user signed up",
+        data: user,
+      });
+    } else {
+      res.json({
+        message: "error while signing up",
+      });
     }
-}
+    // console.log("backend", user);
+    // res.json({
+    //   message: "user signed up",
+    //   data: user,
+    // });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 // Login user
 
 module.exports.login = async function loginUser(req, res) {
-    try {
-      let data = req.body;
-      if (data.email) {
-        let user = await userModel.findOne({ email: data.email });
-  
-        if (user) {
-          //bcyrpt => compare
-          if (user.password == data.password) {
-         
-            let uniqueId  = user['_id'] // unique id
-            let token = jwt.sign({payload:uniqueId}, JWT_KEY)
-               res.cookie("login", token, {httpOnly:true})
-  
-  
-            return res.json({
-              message: "login successfull",
-              user: data,
-            });
-          } else {
-            return res.json({
-              message: "wrong credientials",
-            });
-          }
+  try {
+    let data = req.body;
+    if (data.email) {
+      let user = await userModel.findOne({ email: data.email });
+
+      if (user) {
+        //bcyrpt => compare
+        if (user.password == data.password) {
+          let uniqueId = user["_id"]; // unique id
+          let token = jwt.sign({ payload: uniqueId }, JWT_KEY);
+          res.cookie("login", token, { httpOnly: true });
+
+          return res.json({
+            message: "login successfull",
+            user: data,
+          });
         } else {
-          res.json({
-            message: "user not Found",
+          return res.json({
+            message: "wrong credientials",
           });
         }
       } else {
         res.json({
-          message: " empty field found",
+          message: "user not Found",
         });
       }
-    } catch (error) {
-      return res.status(500).json({
-        message: error.message,
+    } else {
+      res.json({
+        message: " empty field found",
       });
     }
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
+};
 
 // isAuthorised -> to Check if user's role is user is admin, restrauntowner , deliveryBoy
 
-module.exports.isAuthorised = function isAuthorised(roles){
-    return function(req, res, next){
-        if(roles.includes(req.role){
-            next();
-        } else{
-            res.status(401).json({
-                message:"Operation not allowed"
-            })
-        }
+module.exports.isAuthorised = function isAuthorised(roles) {
+  return function (req, res, next) {
+    if (roles.includes(req.role)) {
+      next();
+    } else {
+      res.status(401).json({
+        message: "Operation not allowed",
+      });
     }
-}
+  };
+};
 
 // protectRoute
 
-module.exports.protectRoute = async function protectedRoute(req, res, next){
+module.exports.protectRoute = async function protectedRoute(req, res, next) {
+  try {
     let token;
-    if(req.cookies.login){
+    if (req.cookies.login) {
       console.log(req.cookies);
-      token = req.cookies.login;    
-      let payload = jwt.verify(token,JWT_KEY );
-      
-      if(payload){
-      const user = await userModel.findById(payload.payload)
-      req.role = user.role;
-      req.id = user.id;
-      next();
+      token = req.cookies.login;
+      let payload = jwt.verify(token, JWT_KEY);
+
+      if (payload) {
+        console.log("payload token", payload);
+        const user = await userModel.findById(payload.payload);
+        req.role = user.role;
+        req.id = user.id;
+        console.log(req.id, req.role);
+        next();
       } else {
         return res.json({
-            message:"user is not verified"
-        })
+          message: "user is not verified",
+        });
       }
-     
     } else {
       return res.json({
-        message: "user is not loggedIn operation is not allowed "
-      })
+        message: "Plese login",
+      });
     }
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
+};
+
+// Note: schema -> model -> documents  in mongoDB
+// forgetPassword
+module.exports.forgetpassword = async function forgetpassword(req, res) {
+  let { email } = req.body;
+  try {
+    if (user) {
+      const user = await userModel.findOne({ email });
+      // create reset token used to create new token
+      const resetToken = createResetToken();
+      let resetPasswordLink = `${req.protocol}://${req.get(
+        host
+      )}/resetpassword/${resetToken}`;
+      // send email to user
+      // nodemailer
+    } else {
+      res.json({
+        message: "please login",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// resetv password
+
+async function resetpassword(req, res) {
+  try {
+    const token = req.params.token;
+    let { password, confirmPassword } = req.body;
+    const user = await userModel.findOne({ resetToken: token });
+    if (user) {
+      // resetpasswordHandler will update user's password  in db
+      user.resetPasswordHandler(password, confirmPassword);
+      await user.save();
+      res.json({
+        message: "password change successfully, login again",
+      });
+    } else {
+      res.json({
+        message: "user not found",
+      });
+    }
+  } catch (error) {
+    res,
+      json({
+        message: error.message,
+      });
+  }
+}

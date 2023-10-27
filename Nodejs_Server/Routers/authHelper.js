@@ -4,4 +4,3 @@ const JWT_KEY = require("../scretes")
 
 
 
-  // module.exports = protectedRoute;

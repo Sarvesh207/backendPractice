@@ -18,11 +18,7 @@ module.exports.signup = async function signUp(req, res) {
         message: "error while signing up",
       });
     }
-    // console.log("backend", user);
-    // res.json({
-    //   message: "user signed up",
-    //   data: user,
-    // });
+   
   } catch (error) {
     res.status(500).json({
       message: error.message,
